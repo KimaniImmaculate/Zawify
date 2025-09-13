@@ -17,7 +17,7 @@ Current platforms like Zola and Giftster serve specific markets, but Zawify aims
 ## Tech Stack (Initial)  
 - **Frontend:** HTML, CSS, JavaScript (expanding later to frameworks like React/Vue)  
 - **Version Control:** Git & GitHub  
-- **Project Management:** Trello/Jira  
+- **Project Management:** Google Docs  
 
 ## License  
 This project is open to future contributions. License details will be added as development progresses.  
