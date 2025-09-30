@@ -1,0 +1,133 @@
+/* Importing Dancing Script for cursive font */
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+@import "tailwindcss";
+
+/* Root variables from vanilla CSS */
+:root {
+  --primary-color: #6366F1; /* Purple */
+  --secondary-color: #10B981; /* Green */
+  --accent-color: #F59E0B; /* Orange */
+  --text-dark: #1F2937; /* Dark gray */
+  --text-light: #6B7280; /* Light gray */
+  --background-light: #F9FAFB; /* Very light gray */
+  --white: #FFFFFF;
+}
+
+/* Dark mode variables */
+.dark {
+  --text-dark: #F9FAFB;
+  --text-light: #D1D5DB;
+  --background-light: #1E293B;
+  --white: #0F172A;
+}
+
+/* Global styles */
+body {
+  font-family: cursive;
+  line-height: 1.6;
+  color: var(--text-dark);
+  background: var(--white);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Smooth transitions */
+*, .dark, .dark * {
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Navbar */
+.navbar {
+  backdrop-filter: blur(10px);
+}
+
+/* Nav links hover effect */
+.nav-links a {
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  bottom: -2px;
+  left: 0;
+  transition: width 0.3s ease;
+}
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+  cursor: pointer;
+}
+.btn-primary:hover, .btn-secondary:hover {
+  transform: translateY(-2px);
+}
+.dark .btn-secondary:hover {
+  background-color: var(--primary-color);
+  color: var(--text-dark);
+  border: none;
+}
+
+/* Hero title gradient */
+.hero-title {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Gift card floating animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+}
+
+/* Carousel animation for Problems section */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.carousel-track {
+  animation: scroll 12s linear infinite;
+}
+
+/* Form inputs */
+input, textarea {
+  font-family: inherit;
+}
+input:focus, textarea:focus {
+  outline: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-links a {
+    display: none;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-buttons {
+    flex-direction: column;
+  }
+  .btn-primary.large, .btn-secondary.large {
+    width: 100%;
+  }
+  .carousel-track {
+    animation: none; /* Disable carousel on mobile for better UX */
+  }
+}
