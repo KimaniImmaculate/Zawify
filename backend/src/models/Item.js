@@ -1,0 +1,15 @@
+import mongoose from "mongoose";
+
+const itemSchema = mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    description: { type: String },
+    price: { type: Number },
+    wishlist: { type: mongoose.Schema.Types.ObjectId, ref: "Wishlist", required: true },
+    claimedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  },
+  { timestamps: true }
+);
+
+const Item = mongoose.model("Item", itemSchema);
+export default Item;
