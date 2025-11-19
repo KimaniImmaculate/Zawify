@@ -18,8 +18,8 @@ export default function Login() {
 
     const res = await authService.login({ email, password });
 
-    if (res.user) {
-      loginUser(res.user);
+    if (res.token) {
+      loginUser(res);
       navigate("/dashboard");
     } else {
       setError(res.error);
@@ -27,9 +27,10 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
+    <div className="auth-container">
       <h2>Login</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
+
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -38,6 +39,7 @@ export default function Login() {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
@@ -45,13 +47,10 @@ export default function Login() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <button type="submit">Login</button>
       </form>
     </div>
   );
 }
-
-
-
-
 

@@ -1,3 +1,4 @@
+// frontend/src/pages/AiSuggestions.jsx
 import { useState } from "react";
 
 export default function AiSuggestions() {
@@ -28,20 +29,23 @@ export default function AiSuggestions() {
   };
 
   return (
-    <div className="container">
-      <h2>AI Gift Suggestions 🎁</h2>
+    <div className="ai-container">
+      <h2 className="ai-title">AI Gift Suggestions 🎁</h2>
 
       <input
         type="text"
         placeholder="Enter gift idea or recipient"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        className="ai-input"
       />
-      <button onClick={getSuggestions}>Get Suggestions</button>
+      <button onClick={getSuggestions} className="ai-button">
+        Get Suggestions
+      </button>
 
-      {loading && <p>Generating suggestions...</p>}
+      {loading && <p className="ai-loading">Generating suggestions...</p>}
 
-      <ul>
+      <ul className="ai-results">
         {results.map((r, i) => (
           <li key={i}>{r}</li>
         ))}
@@ -49,3 +53,4 @@ export default function AiSuggestions() {
     </div>
   );
 }
+

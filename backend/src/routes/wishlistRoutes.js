@@ -1,4 +1,5 @@
 import express from "express";
+import protect from "../middleware/authMiddleware.js";
 import {
   getUserWishlists,
   createWishlist,
@@ -8,10 +9,12 @@ import {
 
 const router = express.Router();
 
-router.get("/user/:userId", getUserWishlists);
-router.post("/", createWishlist);
-router.put("/:id", editWishlist);
+router.get("/user/:userId", protect, getUserWishlists);
+router.post("/", protect, createWishlist);
+router.put("/:id", protect, editWishlist);
 router.get("/public/:id", getPublicWishlist);
 
 export default router;
+
+
 

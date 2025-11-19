@@ -13,7 +13,10 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // your React dev server
+  credentials: true, // if you are sending cookies
+}));
 app.use(express.json());
 
 // Routes

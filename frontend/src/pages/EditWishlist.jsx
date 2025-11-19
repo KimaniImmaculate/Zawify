@@ -1,3 +1,4 @@
+// frontend/src/pages/EditWishlist.jsx
 import { useEffect, useState } from "react";
 import { editWishlist, getPublicWishlist } from "../services/wishlistService.js";
 import { useParams, useNavigate } from "react-router-dom";
@@ -18,7 +19,7 @@ export default function EditWishlist() {
         description: res.wishlist.description,
       })
     );
-  }, []);
+  }, [id]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -27,22 +28,27 @@ export default function EditWishlist() {
   };
 
   return (
-    <div className="p-5">
-      <h1>Edit Wishlist</h1>
-      <form onSubmit={handleUpdate}>
+    <div className="edit-wishlist-container">
+      <h1 className="edit-wishlist-title">Edit Wishlist</h1>
+      <form className="edit-wishlist-form" onSubmit={handleUpdate}>
         <input
+          className="edit-wishlist-input"
           value={data.title}
           onChange={(e) => setData({ ...data, title: e.target.value })}
+          placeholder="Title"
         />
         <input
+          className="edit-wishlist-input"
           value={data.description}
           onChange={(e) =>
             setData({ ...data, description: e.target.value })
           }
+          placeholder="Description"
         />
-        <button>Save</button>
+        <button className="edit-wishlist-button">Save</button>
       </form>
     </div>
   );
 }
+
 

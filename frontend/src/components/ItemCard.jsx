@@ -2,18 +2,18 @@ import { Link } from "react-router-dom";
 
 function ItemCard({ item, onWishlist }) {
   return (
-    <div style={styles.card}>
-      <img src={item.image} alt={item.name} style={styles.image} />
+    <div className="item-card">
+      <img src={item.image} alt={item.name} className="item-image" />
 
-      <h3>{item.name}</h3>
-      <p>KES {item.price}</p>
+      <h3 className="item-name">{item.name}</h3>
+      <p className="item-price">KES {item.price}</p>
 
-      <div style={styles.actions}>
-        <Link to={`/product/${item._id}`} style={styles.viewBtn}>
+      <div className="item-actions">
+        <Link to={`/product/${item._id}`} className="btn-view">
           View
         </Link>
 
-        <button style={styles.wishlistBtn} onClick={() => onWishlist(item._id)}>
+        <button className="btn-wishlist" onClick={() => onWishlist(item._id)}>
           ❤️
         </button>
       </div>
@@ -21,39 +21,5 @@ function ItemCard({ item, onWishlist }) {
   );
 }
 
-const styles = {
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "15px",
-    textAlign: "center",
-    width: "220px",
-  },
-  image: {
-    width: "100%",
-    height: "150px",
-    objectFit: "cover",
-    borderRadius: "8px",
-  },
-  actions: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "10px",
-  },
-  viewBtn: {
-    padding: "8px 12px",
-    background: "#222",
-    color: "white",
-    textDecoration: "none",
-    borderRadius: "5px",
-  },
-  wishlistBtn: {
-    padding: "8px 12px",
-    borderRadius: "5px",
-    background: "#ff4081",
-    color: "white",
-    border: "none",
-  },
-};
-
 export default ItemCard;
+

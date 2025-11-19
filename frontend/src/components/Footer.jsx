@@ -1,19 +1,12 @@
-function Footer() {
+export default function Footer() {
   return (
-    <footer style={styles.footer}>
-      <p>© {new Date().getFullYear()} Zawify. All rights reserved.</p>
+    <footer className="footer">
+      <p>
+        © {new Date().getFullYear()} <span className="brand">Zawify</span>. 
+        Making gifts ✨ fun, cute & memorable 💖
+      </p>
     </footer>
   );
 }
 
-const styles = {
-  footer: {
-    textAlign: "center",
-    padding: "20px",
-    background: "#222",
-    color: "white",
-    marginTop: "40px",
-  },
-};
 
-export default Footer;

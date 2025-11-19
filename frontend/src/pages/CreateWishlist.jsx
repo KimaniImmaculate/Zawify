@@ -1,3 +1,4 @@
+// frontend/src/pages/CreateWishlist.jsx
 import { useState, useContext } from "react";
 import { createWishlist } from "../services/wishlistService.js";
 import { AuthContext } from "../context/AuthContext.jsx";
@@ -22,23 +23,28 @@ export default function CreateWishlist() {
   };
 
   return (
-    <div className="p-5">
-      <h1>Create Wishlist</h1>
+    <div className="create-wishlist-container">
+      <h1 className="create-wishlist-title">Create Wishlist</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="create-wishlist-form">
         <input
           placeholder="Title"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
+          className="create-wishlist-input"
         />
 
         <input
           placeholder="Description"
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
+          className="create-wishlist-input"
         />
 
-        <button>Create</button>
+        <button type="submit" className="create-wishlist-button">
+          Create
+        </button>
       </form>
     </div>
   );
 }
-
