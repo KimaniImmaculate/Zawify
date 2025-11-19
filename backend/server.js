@@ -1,36 +1,43 @@
-// server.js
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import connectDB from "./src/config/db.js";
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
+import config from './config.js';
+import authRoutes from './routes/auth.js';
+import wishlistRoutes from './routes/wishlist.js';
 
-// Routes
-import authRoutes from "./src/routes/authRoutes.js";
-import wishlistRoutes from "./src/routes/wishlistRoutes.js";
-
-dotenv.config();
 const app = express();
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/wishlists", wishlistRoutes);
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' }});
 
-// Health check
-app.get("/", (req, res) => {
-  res.send("Zawify API is running 🚀");
+// attach io to app so routes can emit
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  console.log('socket connected', socket.id);
+  // clients join a room named after wishlist slug
+  socket.on('join', (slug) => {
+    socket.join(slug);
+  });
+  socket.on('leave', (slug) => socket.leave(slug));
 });
 
-// Connect to MongoDB
-connectDB();
+app.use('/api/auth', authRoutes);
+app.use('/api/wishlists', wishlistRoutes);
 
-// Start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// static serve in production (optional)
+// app.use(express.static('public'));
+
+mongoose.connect(config.mongoURI, { })
+  .then(() => {
+    console.log('Mongo connected');
+    server.listen(config.port, () => console.log('Server running on', config.port));
+  })
+  .catch(err => console.error(err));
+
 
 

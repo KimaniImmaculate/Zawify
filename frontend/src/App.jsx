@@ -1,41 +1,27 @@
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Wishlist from "./pages/Wishlist.jsx";
-import AiSuggestions from "./pages/AiSuggestions.jsx";
+import React from 'react';
+import Hero from './components/Hero';
+import CreateWishlist from './components/CreateWishlist';
+import WishlistView from './components/WishlistView';
 
-import CreateWishlist from "./pages/CreateWishlist.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import EditWishlist from "./pages/EditWishlist.jsx";
-import PublicWishlist from "./pages/PublicWishlist.jsx";
-
-import Navbar from "./components/Navbar.jsx";
-
-function App() {
+export default function App(){
   return (
-    <>
-      <Navbar />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/wishlist/public/:id" element={<PublicWishlist />} />
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+      <header className="p-6 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="bg-purple-100 rounded p-2 text-purple-600">🎁</div>
+          <h1 className="font-bold text-xl text-purple-600">Zawify</h1>
+        </div>
+        <button className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 rounded-full">Get Started</button>
+      </header>
 
-        {/* Authenticated User Routes (Protected later) */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/wishlist/create" element={<CreateWishlist />} />
-        <Route path="/wishlist/:id" element={<Wishlist />} />
-        <Route path="/wishlist/:id/edit" element={<EditWishlist />} />
-
-        {/* AI Suggestions */}
-        <Route path="/ai" element={<AiSuggestions />} />
-      </Routes>
-    </>
+      <main className="px-8">
+        <Hero />
+        <CreateWishlist />
+        <WishlistView />
+      </main>
+    </div>
   );
 }
 
-export default App;
 
 
