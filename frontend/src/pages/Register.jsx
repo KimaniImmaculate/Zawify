@@ -1,69 +1,65 @@
+// frontend/src/pages/Register.jsx
 import { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext.jsx";
+import authService from "../services/authService.js";
 
-function Register() {
-  const { register } = useContext(AuthContext);
+export default function Register() {
+  const { loginUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const submit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    try {
-      await register(data);
-      alert("Account created! You can now login.");
-      navigate("/login");
-    } catch (err) {
-      alert("Registration failed.");
+    setError("");
+
+    const res = await authService.register({ name, email, password });
+
+    if (res.user) {
+      loginUser(res.user);
+      navigate("/dashboard");
+    } else {
+      setError(res.error);
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Create Account</h2>
-
-      <form style={styles.form} onSubmit={submit}>
+    <div className="container">
+      <h2>Register</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleRegister}>
         <input
           type="text"
           placeholder="Name"
-          style={styles.input}
-          value={data.name}
-          onChange={(e) => setData({ ...data, name: e.target.value })}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
         />
-
         <input
           type="email"
           placeholder="Email"
-          style={styles.input}
-          value={data.email}
-          onChange={(e) => setData({ ...data, email: e.target.value })}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
-
         <input
           type="password"
           placeholder="Password"
-          style={styles.input}
-          value={data.password}
-          onChange={(e) => setData({ ...data, password: e.target.value })}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
         />
-
-        <button style={styles.btn}>Register</button>
+        <button type="submit">Register</button>
       </form>
     </div>
   );
 }
 
-const styles = {
-  container: { width: "320px", margin: "30px auto" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "10px", border: "1px solid #ccc" },
-  btn: { padding: "10px", background: "black", color: "white" },
-};
 
-export default Register;
+
+
 

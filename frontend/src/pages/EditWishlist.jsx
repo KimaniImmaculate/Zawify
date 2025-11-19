@@ -1,49 +1,48 @@
-import { useState, useEffect } from "react";
-import wishlistService from "../services/wishlistService";
+import { useEffect, useState } from "react";
+import { editWishlist, getPublicWishlist } from "../services/wishlistService.js";
 import { useParams, useNavigate } from "react-router-dom";
 
-function EditWishlist() {
+export default function EditWishlist() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [title, setTitle] = useState("");
+  const [data, setData] = useState({
+    title: "",
+    description: "",
+  });
 
   useEffect(() => {
-    wishlistService.getOne(id).then((res) => {
-      setTitle(res.data.title);
-    });
-  }, [id]);
+    getPublicWishlist(id).then((res) =>
+      setData({
+        title: res.wishlist.title,
+        description: res.wishlist.description,
+      })
+    );
+  }, []);
 
-  const submit = async (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    await wishlistService.update(id, { title });
+    await editWishlist(id, data);
     navigate("/dashboard");
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Edit Wishlist</h2>
-
-      <form style={styles.form} onSubmit={submit}>
+    <div className="p-5">
+      <h1>Edit Wishlist</h1>
+      <form onSubmit={handleUpdate}>
         <input
-          type="text"
-          placeholder="Wishlist Name"
-          style={styles.input}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={data.title}
+          onChange={(e) => setData({ ...data, title: e.target.value })}
         />
-
-        <button style={styles.btn}>Save Changes</button>
+        <input
+          value={data.description}
+          onChange={(e) =>
+            setData({ ...data, description: e.target.value })
+          }
+        />
+        <button>Save</button>
       </form>
     </div>
   );
 }
 
-const styles = {
-  container: { width: "320px", margin: "30px auto" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "10px" },
-  btn: { padding: "10px", background: "black", color: "white" },
-};
-
-export default EditWishlist;

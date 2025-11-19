@@ -1,9 +1,17 @@
 import express from "express";
-import { getWishlists, createWishlist } from "../controllers/wishlistController.js";
+import {
+  getUserWishlists,
+  createWishlist,
+  editWishlist,
+  getPublicWishlist
+} from "../controllers/wishlistController.js";
 
 const router = express.Router();
 
-router.get("/", getWishlists);
+router.get("/user/:userId", getUserWishlists);
 router.post("/", createWishlist);
+router.put("/:id", editWishlist);
+router.get("/public/:id", getPublicWishlist);
 
 export default router;
+

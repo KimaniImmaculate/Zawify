@@ -1,51 +1,41 @@
+// frontend/src/context/AuthContext.jsx
 import { createContext, useState, useEffect } from "react";
-import authService from "../services/authService";
-import API from "../services/api";
 
 export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user from token
+  // Load user from localStorage safely
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
-
-    if (token && userData) {
-      API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(JSON.parse(userData));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch {
+        console.warn("Failed to parse user from localStorage");
+        localStorage.removeItem("user");
+      }
     }
   }, []);
 
-  const login = async (email, password) => {
-    const res = await authService.login({ email, password });
-
-    const token = res.data.token;
-    const user = res.data.user;
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-
-    API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setUser(user);
+  const loginUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  const register = async (data) => {
-    return authService.register(data);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    delete API.defaults.headers.common["Authorization"];
-
+  const logoutUser = () => {
     setUser(null);
+    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
+
+
+
+

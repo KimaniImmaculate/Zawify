@@ -1,40 +1,29 @@
 import { useEffect, useState } from "react";
+import { getPublicWishlist } from "../services/wishlistService.js";
 import { useParams } from "react-router-dom";
-import wishlistService from "../services/wishlistService";
-import ItemCard from "../components/ItemCard";
 
-function PublicWishlist() {
+export default function PublicWishlist() {
   const { id } = useParams();
-  const [items, setItems] = useState([]);
-  const [title, setTitle] = useState("");
+  const [wishlist, setWishlist] = useState(null);
 
   useEffect(() => {
-    wishlistService.getOne(id).then((res) => {
-      setTitle(res.data.title);
-      setItems(res.data.items);
-    });
-  }, [id]);
+    getPublicWishlist(id).then((res) => setWishlist(res.wishlist));
+  }, []);
+
+  if (!wishlist) return <p>Loading...</p>;
 
   return (
-    <div style={styles.container}>
-      <h2>{title}</h2>
+    <div className="p-5">
+      <h1>{wishlist.title}</h1>
+      <p>{wishlist.description}</p>
 
-      <div style={styles.grid}>
-        {items.map((item) => (
-          <ItemCard key={item._id} item={item} onWishlist={() => {}} />
-        ))}
-      </div>
+      <h3>Items</h3>
+      {wishlist.items.length === 0 ? (
+        <p>No items yet.</p>
+      ) : (
+        wishlist.items.map((i) => <p key={i._id}>{i.name}</p>)
+      )}
     </div>
   );
 }
 
-const styles = {
-  container: { padding: "20px" },
-  grid: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "20px",
-  },
-};
-
-export default PublicWishlist;

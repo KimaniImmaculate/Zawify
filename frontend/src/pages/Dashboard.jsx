@@ -1,36 +1,39 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import wishlistService from "../services/wishlistService";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext.jsx";
+import { getUserWishlists } from "../services/wishlistService.js";
 
-function Dashboard() {
+export default function Dashboard() {
   const { user } = useContext(AuthContext);
-  const [count, setCount] = useState(0);
+  const [wishlists, setWishlists] = useState([]);
 
   useEffect(() => {
-    wishlistService.getAll().then((res) => setCount(res.data.length));
-  }, []);
+    if (!user) return;
+
+    getUserWishlists(user._id)
+      .then((res) => setWishlists(res.wishlists))
+      .catch((err) => console.error(err));
+  }, [user]);
+
+  if (!user) return <p>Loading...</p>;
 
   return (
-    <div style={styles.container}>
-      <h2>Welcome, {user?.name}</h2>
+    <div className="p-5">
+      <h1>Your Wishlists</h1>
 
-      <div style={styles.card}>
-        <h3>Wishlists Created</h3>
-        <p>{count}</p>
-      </div>
+      {wishlists.length === 0 ? (
+        <p>No wishlists yet.</p>
+      ) : (
+        <ul>
+          {wishlists.map((w) => (
+            <li key={w._id}>
+              <strong>{w.title}</strong> — {w.description}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
-const styles = {
-  container: { padding: "20px" },
-  card: {
-    border: "1px solid #ddd",
-    padding: "20px",
-    width: "250px",
-    borderRadius: "10px",
-    marginTop: "20px",
-  },
-};
 
-export default Dashboard;
+

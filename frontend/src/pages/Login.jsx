@@ -1,62 +1,57 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+// frontend/src/pages/Login.jsx
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext.jsx";
+import authService from "../services/authService.js";
 
-function Login() {
-  const { login } = useContext(AuthContext);
+export default function Login() {
+  const { loginUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const submit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      await login(email, password);
+    setError("");
+
+    const res = await authService.login({ email, password });
+
+    if (res.user) {
+      loginUser(res.user);
       navigate("/dashboard");
-    } catch (err) {
-      alert("Invalid credentials");
+    } else {
+      setError(res.error);
     }
   };
 
   return (
-    <div style={styles.container}>
+    <div className="container">
       <h2>Login</h2>
-
-      <form style={styles.form} onSubmit={submit}>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Email"
-          style={styles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
-
         <input
           type="password"
           placeholder="Password"
-          style={styles.input}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
-
-        <button style={styles.btn}>Login</button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
 }
 
-const styles = {
-  container: { width: "300px", margin: "30px auto" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "10px", border: "1px solid #ccc" },
-  btn: {
-    padding: "10px",
-    background: "black",
-    color: "white",
-    border: "none",
-  },
-};
 
-export default Login;
+
+
 

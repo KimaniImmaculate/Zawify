@@ -1,41 +1,44 @@
-import { useState } from "react";
-import wishlistService from "../services/wishlistService";
+import { useState, useContext } from "react";
+import { createWishlist } from "../services/wishlistService.js";
+import { AuthContext } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
-function CreateWishlist() {
+export default function CreateWishlist() {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    await wishlistService.create({ title });
+
+    await createWishlist({
+      owner: user._id,
+      title,
+      description,
+    });
+
     navigate("/dashboard");
   };
 
   return (
-    <div style={styles.container}>
-      <h2>Create Wishlist</h2>
+    <div className="p-5">
+      <h1>Create Wishlist</h1>
 
-      <form style={styles.form} onSubmit={submit}>
+      <form onSubmit={handleSubmit}>
         <input
-          type="text"
-          placeholder="Wishlist Name"
-          style={styles.input}
-          value={title}
+          placeholder="Title"
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <button style={styles.btn}>Create</button>
+        <input
+          placeholder="Description"
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <button>Create</button>
       </form>
     </div>
   );
 }
 
-const styles = {
-  container: { width: "300px", margin: "30px auto" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "10px", border: "1px solid #ccc" },
-  btn: { padding: "10px", background: "black", color: "white" },
-};
-
-export default CreateWishlist;

@@ -1,14 +1,21 @@
 import mongoose from "mongoose";
 
-const wishlistSchema = mongoose.Schema(
+const wishlistSchema = new mongoose.Schema(
   {
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true },
     description: { type: String },
-    host: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
+    items: [
+      {
+        name: String,
+        link: String,
+        price: Number,
+      },
+    ],
+    isPublic: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-const Wishlist = mongoose.model("Wishlist", wishlistSchema);
-export default Wishlist;
+export default mongoose.model("Wishlist", wishlistSchema);
+
