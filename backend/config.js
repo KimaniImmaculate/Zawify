@@ -1,17 +1,20 @@
 // backend/config.js
 import mongoose from "mongoose";
 
+// Get the URI from the environment variables
+const db = process.env.MONGO_URI; 
+
 const connectDB = async () => {
-  try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/zawify", {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("MongoDB Connected");
-  } catch (err) {
-    console.error("MongoDB connection error:", err);
-    process.exit(1); // ← This stops the server if DB fails
-  }
+  try {
+    await mongoose.connect(db, {
+      useNewUrlParser: true, // While deprecated, leaving for compatibility
+      useUnifiedTopology: true, // While deprecated, leaving for compatibility
+    });
+    console.log("MongoDB Atlas Connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Stop the server if DB fails
+  }
 };
 
 export default connectDB;
