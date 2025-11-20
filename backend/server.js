@@ -28,7 +28,6 @@ const startServer = async () => {
     try {
         // --- Middleware ---
         const allowedOrigins = [
-            "http://localhost:5173",
             process.env.CLIENT_URL, // for deployed frontend
         ];
 
