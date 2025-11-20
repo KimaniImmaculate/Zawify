@@ -5,7 +5,7 @@ Zawify is a MERN (MongoDB, Express, React, Node) application with Socket.IO for 
 ---
 
 ## Live demo
-- Frontend: <Insert Frontend URL>
+- Frontend: https://zawify.vercel.app/
 - Backend API: <Insert Backend API Base URL>
 
 ---
