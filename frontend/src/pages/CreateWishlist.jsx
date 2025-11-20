@@ -68,7 +68,7 @@ const CreateWishlist = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 py-10 px-4">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 to-pink-50 py-10 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
         <h1 className="text-4xl font-bold text-center text-indigo-700 mb-8">
           Create Your Wishlist

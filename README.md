@@ -1,40 +1,60 @@
 # Zawify — Real‑Time Wishlist App
 
-Zawify is a MERN (MongoDB, Express, React, Node) application with Socket.IO for real‑time gift claiming. Users create shareable wishlists and friends/family can claim gifts in real time without duplicate claims.
+Zawify is a real‑time gift‑claiming application built with the MERN stack (MongoDB Atlas, Express, React + Vite, Node.js) and Socket.IO. Users create shareable wishlists and friends/family can claim gifts in real time while preventing duplicate claims.
 
 ---
 
 ## Live demo
-- Frontend: https://zawify.vercel.app/
+- Frontend: https://zawify.vercel.app/  
 - Backend API: https://zawify-2.onrender.com/
 
 ---
 
-## Tech stack
-- Frontend: React (Vite), Tailwind CSS (optional)
-- Backend: Node.js, Express, Socket.IO
-- Database: MongoDB Atlas
-- Auth: JWT
+## Table of contents
+- [Overview](#overview)  
+- [Features](#features)  
+- [Architecture & stack](#architecture--stack)  
+- [Project structure](#project-structure)  
+- [Quick start (local development)](#quick-start-local-development)  
+- [Environment variables](#environment-variables)  
+- [API reference (examples)](#api-reference-examples)  
+- [Deployment notes](#deployment-notes)  
 
 ---
 
-## Key features
-- JWT authentication (register / login)
-- Create, edit and publish wishlists
-- Public shareable wishlist links
-- Real‑time gift claiming via Socket.IO (prevents duplicate claims)
-- Minimal REST API for CRUD and claiming
+## Overview
+Owners create wishlists and add items. Each wishlist can be published via a public link. Visitors open the public link and claim items; claims are processed by the server and broadcast via Socket.IO so all connected clients see updates instantly. JWT-based auth protects create/edit/claim operations.
 
 ---
 
-# Project structure (Zawify)
+## Features
+- User registration & JWT authentication
+- Create, edit, delete wishlists and items
+- Publish wishlists via public URL
+- Real‑time gift claiming using Socket.IO, preventing duplicate claims
+- REST API for programmatic access
+- Minimal admin endpoints (extendable)
 
+---
+
+## Architecture & stack
+- Frontend: React + Vite, optional Tailwind, axios, socket.io-client  
+- Backend: Node.js, Express, Socket.IO, Mongoose (MongoDB Atlas)  
+- Auth: JSON Web Tokens (JWT)  
+- Realtime: Socket.IO rooms per wishlist
+
+---
+
+## Project structure
+Monorepo layout:
+
+```
 Zawify/
 ├── README.md
 ├── frontend/
 │   ├── public/
 │   ├── src/
-│   │   ├── components/        # Reusable UI components (Navbar, ItemCard, etc.)
+│   │   ├── components/        # Reusable UI components (Navbar, ItemCard, WishlistCard, etc.)
 │   │   ├── pages/             # Views (LandingPage, AuthForm, CreateWishlist, WishlistDetail, Signup, Login)
 │   │   ├── services/          # API helpers (api.js, authService.js, wishlistService.js, aiService.js)
 │   │   ├── App.jsx
@@ -54,14 +74,15 @@ Zawify/
         ├── routes/            # Express routes (auth.js, wishlist.js, item.js, ai.js)
         ├── middleware/        # auth.js (JWT), error handling
         └── utils/             # helpers (token generation, socket helpers)
+```
 
 ---
 
-## Local development
+## Quick start (local development)
 
-Prerequisites
+Prereqs:
 - Node.js v18+
-- MongoDB Atlas URI
+- MongoDB Atlas connection string
 - Git
 
 1. Clone
@@ -74,20 +95,24 @@ cd Zawify
 ```bash
 cd backend
 npm install
-# create .env (example below)
-npm run server   # or `npm run dev` if script available
+# create .env (see example below)
+npm run server   # or `npm run dev` depending on package.json
 ```
 
 3. Frontend
 ```bash
 cd ../frontend
 npm install
-# optional: create frontend/.env -> VITE_API_URL=http://localhost:5000
+# optionally set VITE_API_URL=http://localhost:5000 in frontend/.env
 npm run dev
 # open http://localhost:5173
 ```
 
-### Backend `.env` example
+---
+
+## Environment variables
+
+Backend `backend/.env` (example)
 ```
 MONGO_URI="mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/zawify?retryWrites=true&w=majority"
 JWT_SECRET="a_strong_jwt_secret"
@@ -95,40 +120,48 @@ PORT=5000
 FRONTEND_ORIGIN="http://localhost:5173"
 ```
 
----
-
-## Important API endpoints (examples)
-- `POST /api/auth/register` — register user
-- `POST /api/auth/login` — login, returns JWT
-- `POST /api/wishlists` — create wishlist (auth)
-- `GET /api/wishlists/:id` — get wishlist
-- `GET /api/wishlists/public/:id` — public access
-- `POST /api/wishlists/:id/claim` — claim an item (auth), emits Socket.IO update
+Frontend `frontend/.env` (example)
+```
+VITE_API_URL="http://localhost:5000"
+```
 
 ---
 
-## Socket.IO overview
-- Server provides rooms per wishlist (e.g. `wishlist:<id>`).
-- Client joins room and listens for events (e.g. `gift:claimed`).
-- When an item is claimed, server updates DB and emits `gift:claimed` to that room so all clients update instantly.
+## API reference (examples)
+All endpoints are mounted under `/api`.
 
-Client example:
-```js
-const socket = io(BACKEND_URL);
-socket.emit('join', `wishlist:${id}`);
-socket.on('gift:claimed', payload => { /* update UI */ });
-```
+Auth
+- POST /api/auth/register  
+  Body: `{ "name", "email", "password" }`  
+  Response: `{ token, user }`
 
-Server emits:
-```js
-io.to(`wishlist:${id}`).emit('gift:claimed', { wishlistId: id, itemId, claimedBy });
-```
+- POST /api/auth/login  
+  Body: `{ "email", "password" }`  
+  Response: `{ token, user }`
+
+Wishlists
+- POST /api/wishlists (auth) — create wishlist. Body: `{ title, description?, isPublic? }`  
+- GET /api/wishlists/:id — get wishlist details  
+- GET /api/wishlists/public/:id — public view (no auth)  
+- POST /api/wishlists/:id/claim (auth) — claim an item. Body: `{ itemId }`  
+  Response: `{ success: true, itemId, claimedBy }` and emits `gift:claimed` to `wishlist:<id>`
 
 ---
 
 ## Deployment notes
-- Frontend: Vercel / Netlify — build the Vite app and point to the backend URL.
-- Backend: Render / Heroku / Railway — set `MONGO_URI`, `JWT_SECRET`, and allowed CORS origins.
-- Ensure Socket.IO support and use HTTPS in production.
+Frontend
+- Build the Vite app and deploy to Vercel/Netlify. Set `VITE_API_URL` to the backend URL.
+
+Backend
+- Deploy to Render/Heroku/Railway. Set `MONGO_URI`, `JWT_SECRET`, `FRONTEND_ORIGIN`. Ensure Socket.IO support; for multi-instance use Redis adapter.
+
+Checklist for production
+- HTTPS, secure cookies, proper CORS, rotate secrets, enable logging and monitoring, database backups.
+
+
+
+
+
+
 
 
