@@ -2,13 +2,12 @@
 
 Zawify is a real‑time gift‑claiming application built with the MERN stack (MongoDB Atlas, Express, React + Vite, Node.js) and Socket.IO. Users create shareable wishlists and friends/family can claim gifts in real time while preventing duplicate claims.
 
----
 
 ## Live demo
 - Frontend: https://zawify.vercel.app/  
 - Backend API: https://zawify-2.onrender.com/
 
----
+
 
 ## Table of contents
 - [Overview](#overview)  
@@ -17,15 +16,14 @@ Zawify is a real‑time gift‑claiming application built with the MERN stack (M
 - [Project structure](#project-structure)  
 - [Quick start (local development)](#quick-start-local-development)  
 - [Environment variables](#environment-variables)  
-- [API reference (examples)](#api-reference-examples)  
+- [API reference (examples)](#api-reference-examples) 
+- [Screenshots](#screenshots)  
 - [Deployment notes](#deployment-notes)  
 
----
 
 ## Overview
 Owners create wishlists and add items. Each wishlist can be published via a public link. Visitors open the public link and claim items; claims are processed by the server and broadcast via Socket.IO so all connected clients see updates instantly. JWT-based auth protects create/edit/claim operations.
 
----
 
 ## Features
 - User registration & JWT authentication
@@ -35,7 +33,7 @@ Owners create wishlists and add items. Each wishlist can be published via a publ
 - REST API for programmatic access
 - Minimal admin endpoints (extendable)
 
----
+
 
 ## Architecture & stack
 - Frontend: React + Vite, optional Tailwind, axios, socket.io-client  
@@ -43,7 +41,7 @@ Owners create wishlists and add items. Each wishlist can be published via a publ
 - Auth: JSON Web Tokens (JWT)  
 - Realtime: Socket.IO rooms per wishlist
 
----
+
 
 ## Project structure
 Monorepo layout:
@@ -76,7 +74,6 @@ Zawify/
         └── utils/             # helpers (token generation, socket helpers)
 ```
 
----
 
 ## Quick start (local development)
 
@@ -125,7 +122,6 @@ Frontend `frontend/.env` (example)
 VITE_API_URL="http://localhost:5000"
 ```
 
----
 
 ## API reference (examples)
 All endpoints are mounted under `/api`.
@@ -146,7 +142,12 @@ Wishlists
 - POST /api/wishlists/:id/claim (auth) — claim an item. Body: `{ itemId }`  
   Response: `{ success: true, itemId, claimedBy }` and emits `gift:claimed` to `wishlist:<id>`
 
----
+## Screenshots
+
+- `assets/zawify1.png`
+- `assets/zawify2.png`
+- `assets/zawify3.png`
+
 
 ## Deployment notes
 Frontend
