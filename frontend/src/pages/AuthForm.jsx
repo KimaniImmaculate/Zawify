@@ -25,10 +25,11 @@ const AuthForm = () => {
         setLoading(true);
         setError(null);
 
-        // THIS IS THE ONLY LINE THAT WAS WRONG
-        const endpoint = isLogin 
-            ? 'http://localhost:5000/api/auth/login' 
-            : 'http://localhost:5000/api/auth/register';
+       const BACKEND_BASE_URL = 'https://zawify-2.onrender.com';
+
+    const endpoint = isLogin 
+        ? `${BACKEND_BASE_URL}/api/auth/login` 
+        : `${BACKEND_BASE_URL}/api/auth/register`;
 
         try {
             const res = await axios.post(endpoint, formData);
@@ -42,8 +43,7 @@ const AuthForm = () => {
             setError(
                 err.response?.data?.msg || 
                 err.response?.data?.message || 
-                'Network error – check if backend is running on port 5000'
-            );
+                  'Network error – check your connection or ensure the backend service is running'            );
         } finally {
             setLoading(false);
         }
