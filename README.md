@@ -143,9 +143,9 @@ Wishlists
 
 ## Screenshots
 
-- (Zawify/assets/zawify1.png)
-- (Zawify/assets/zawify2.png)
-- (Zawify/assets/zawify3.png)
+- ![Landing Page](assets/zawify1.png)
+- ![Landing Page 2](assets/zawify2.png)
+- ![Login/Signup Page](assets/zawify3.png)
 
 
 ## Deployment notes
