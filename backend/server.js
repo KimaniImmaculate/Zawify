@@ -1,4 +1,6 @@
 // backend/server.js
+import 'dotenv/config';
+console.log("MONGO_URI check:", process.env.MONGO_URI ? "Loaded Atlas URI" : "ERROR: Not loaded");
 import express from "express";
 import cors from "cors";
 import http from "http";

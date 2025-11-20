@@ -1,25 +1,20 @@
-import jwt from 'jsonwebtoken';
+// backend/src/middleware/auth.js
+import jwt from "jsonwebtoken";
 
-// NOTE: Ensure your JWT_SECRET is available in the environment variables (.env file)
 const authMiddleware = (req, res, next) => {
-    // Get token from the header
-    const token = req.header('x-auth-token');
+  const token = req.headers.authorization?.split(" ")[1];
 
-    // Check if no token
-    if (!token) {
-        return res.status(401).json({ msg: 'No token, authorization denied' });
-    }
+  if (!token) {
+    return res.status(401).json({ msg: "No token provided" });
+  }
 
-    // Verify token
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        // Attach user info to the request object
-        req.user = decoded.user; // Should contain { id, name }
-        next();
-    } catch (err) {
-        res.status(401).json({ msg: 'Token is not valid' });
-    }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret_zawify_2025");
+    req.user = { id: decoded.id }; // This is what your route expects
+    next();
+  } catch (err) {
+    res.status(401).json({ msg: "Invalid token" });
+  }
 };
 
 export default authMiddleware;

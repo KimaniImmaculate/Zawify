@@ -24,16 +24,27 @@ const AuthForm = () => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-        
-        const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-        
+
+        // THIS IS THE ONLY LINE THAT WAS WRONG
+        const endpoint = isLogin 
+            ? 'http://localhost:5000/api/auth/login' 
+            : 'http://localhost:5000/api/auth/register';
+
         try {
             const res = await axios.post(endpoint, formData);
+            
+            // Save token and redirect
             localStorage.setItem('token', res.data.token);
             navigate('/create-wishlist');
 
         } catch (err) {
-            setError(err.response?.data?.msg || 'Authentication failed. Please check your credentials.');
+            console.error("Auth error:", err.response || err);
+            setError(
+                err.response?.data?.msg || 
+                err.response?.data?.message || 
+                'Network error – check if backend is running on port 5000'
+            );
+        } finally {
             setLoading(false);
         }
     };
@@ -47,7 +58,7 @@ const AuthForm = () => {
                 </h2>
                 
                 {error && (
-                    <div className="bg-red-100 text-red-700 p-3 rounded mb-4 border border-red-300">
+                    <div className="bg-red-100 text-red-700 p-3 rounded mb-4 border border-red-300 text-sm">
                         {error}
                     </div>
                 )}
@@ -56,7 +67,7 @@ const AuthForm = () => {
                     
                     {!isLogin && (
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="name">
+                            <label className="block text-gray-700 text-sm font-semibold mb-2">
                                 Name
                             </label>
                             <input
@@ -72,7 +83,7 @@ const AuthForm = () => {
                     )}
 
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="email">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Email
                         </label>
                         <input
@@ -87,7 +98,7 @@ const AuthForm = () => {
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-semibold mb-2" htmlFor="password">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">
                             Password
                         </label>
                         <input
@@ -96,7 +107,7 @@ const AuthForm = () => {
                             value={password}
                             onChange={onChange}
                             required
-                            minLength={isLogin ? 6 : 8}
+                            minLength={6}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             placeholder="••••••••"
                         />
@@ -104,8 +115,8 @@ const AuthForm = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 disabled:opacity-50"
                         disabled={loading}
+                        className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Processing...' : isLogin ? 'Log In' : 'Sign Up'}
                     </button>
@@ -114,6 +125,7 @@ const AuthForm = () => {
                 <p className="mt-6 text-center text-gray-600">
                     {isLogin ? "Don't have an account? " : "Already have an account? "}
                     <button
+                        type="button"
                         onClick={() => setIsLogin(!isLogin)}
                         className="text-indigo-600 font-semibold hover:text-indigo-800 transition duration-150"
                         disabled={loading}

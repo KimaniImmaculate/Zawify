@@ -1,98 +1,101 @@
+// backend/src/routes/wishlist.js
 import express from "express";
 import Wishlist from "../models/Wishlist.js";
-import authMiddleware from "../middleware/auth.js"; 
+import authMiddleware from "../middleware/auth.js"; // ← make sure this file exists!
 
 const router = express.Router();
 
-// @route   POST api/wishlists/create
-// @desc    Create a new wishlist
-// @access  Private
+// CREATE WISHLIST - Protected (only logged-in users)
 router.post("/create", authMiddleware, async (req, res) => {
-    try {
-        const { title, gifts } = req.body;
-        
-        const newWishlist = new Wishlist({
-            title,
-            gifts: gifts,
-            owner: req.user.id,
-            ownerName: req.user.name, 
-        });
+  try {
+    const { title, gifts } = req.body;
 
-        const wishlist = await newWishlist.save();
-        
-        res.status(201).json({ wishlistId: wishlist._id }); 
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error during creation');
+    // Validation
+    if (!title || !gifts || !Array.isArray(gifts) || gifts.length === 0) {
+      return res.status(400).json({ msg: "Title and at least one gift are required" });
     }
+
+    const newWishlist = new Wishlist({
+      title,
+      gifts: gifts.map(g => ({
+        name: g.name,
+        url: g.url || "",
+        isClaimed: false
+      })),
+      owner: req.user.id,
+      ownerName: req.user.name || req.user.email,
+    });
+
+    const wishlist = await newWishlist.save();
+    res.status(201).json({ wishlistId: wishlist._id });
+
+  } catch (err) {
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({ msg: "Validation failed", errors });
+    }
+    console.error("Create wishlist error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
 });
 
-// @route   GET api/wishlists/:wishlistId
-// @desc    Get a single wishlist by ID
-// @access  Public
+// GET WISHLIST - Public
 router.get("/:wishlistId", async (req, res) => {
-    try {
-        const wishlist = await Wishlist.findById(req.params.wishlistId).select('-owner -__v');
-        
-        if (!wishlist) {
-            return res.status(404).json({ msg: 'Wishlist not found' });
-        }
-        
-        res.json(wishlist);
-    } catch (err) {
-        if (err.kind === 'ObjectId') {
-             return res.status(404).json({ msg: 'Wishlist not found' });
-        }
-        console.error(err.message);
-        res.status(500).send('Server Error during retrieval');
+  try {
+    const wishlist = await Wishlist.findById(req.params.wishlistId)
+      .select('-owner -__v'); // hide sensitive fields
+
+    if (!wishlist) {
+      return res.status(404).json({ msg: "Wishlist not found" });
     }
+
+    res.json(wishlist);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: "Invalid wishlist ID" });
+    }
+    console.error("Get wishlist error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
 });
 
-// @route   POST api/wishlists/claim
-// @desc    Claim a specific gift on a list
-// @access  Private (Requires claimant to be logged in)
+// CLAIM GIFT - Protected (only logged-in users can claim)
 router.post("/claim", authMiddleware, async (req, res) => {
-    try {
-        const { wishlistId, giftId } = req.body;
-        
-        const wishlist = await Wishlist.findById(wishlistId);
+  try {
+    const { wishlistId, giftId } = req.body;
 
-        if (!wishlist) {
-            return res.status(404).json({ msg: 'Wishlist not found' });
-        }
+    const wishlist = await Wishlist.findById(wishlistId);
+    if (!wishlist) return res.status(404).json({ msg: "Wishlist not found" });
 
-        const giftToClaim = wishlist.gifts.find(gift => gift._id.toString() === giftId);
+    const gift = wishlist.gifts.id(giftId); // ← BEST WAY to find subdocument
+    if (!gift) return res.status(404).json({ msg: "Gift not found" });
 
-        if (!giftToClaim) {
-            return res.status(404).json({ msg: 'Gift item not found' });
-        }
-
-        if (giftToClaim.isClaimed) {
-            return res.status(400).json({ msg: 'Gift is already claimed' });
-        }
-
-        // Apply claim changes
-        giftToClaim.isClaimed = true;
-        giftToClaim.claimedBy = req.user.id;
-        giftToClaim.claimedByName = req.user.name; 
-
-        await wishlist.save();
-        
-        // This response should be used by Socket.IO to emit a real-time update
-        res.json({ 
-            msg: 'Gift claimed successfully', 
-            claimedBy: req.user.name,
-            giftId: giftId,
-            wishlistId: wishlistId
-        });
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server Error during claim attempt');
+    if (gift.isClaimed) {
+      return res.status(400).json({ msg: "This gift is already claimed" });
     }
+
+    gift.isClaimed = true;
+    gift.claimedBy = req.user.id;
+    gift.claimedByName = req.user.name || req.user.email;
+    gift.claimedAt = new Date();
+
+    await wishlist.save();
+
+    // Emit via Socket.IO later
+    res.json({
+      msg: "Gift claimed successfully!",
+      claimedBy: gift.claimedByName,
+      giftId: gift._id,
+      wishlistId
+    });
+
+  } catch (err) {
+    console.error("Claim error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
 });
 
 export default router;
-
 
 
 

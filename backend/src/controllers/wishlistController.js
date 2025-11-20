@@ -1,57 +1,49 @@
+// backend/src/controllers/wishlistController.js
 import Wishlist from "../models/Wishlist.js";
-import User from "../models/User.js";
 
 export const createWishlist = async (req, res) => {
   try {
-    const { name, userId } = req.body;
-    const wishlist = await Wishlist.create({ name, creator: userId });
-    res.status(201).json(wishlist);
+    const { title, items } = req.body;
+
+    const wishlist = await Wishlist.create({
+      title,
+      items: items || []
+    });
+
+    res.status(201).json(wishlist); // returns full object including _id
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const getWishlists = async (req, res) => {
+export const getWishlist = async (req, res) => {
   try {
-    const wishlists = await Wishlist.find({ creator: req.params.userId });
-    res.json(wishlists);
+    const wishlist = await Wishlist.findById(req.params.id);
+    if (!wishlist) return res.status(404).json({ message: "Not found" });
+    res.json(wishlist);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-export const addGiftItem = async (req, res) => {
+export const claimItem = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { name, image, price, link, description } = req.body;
+    const { id, itemIndex } = req.params;
+    const { claimedBy } = req.body;
 
-    const updated = await Wishlist.findByIdAndUpdate(
-      id,
-      { $push: { items: { name, image, price, link, description } } },
-      { new: true }
-    );
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+    const wishlist = await Wishlist.findById(id);
+    if (!wishlist) return res.status(404).json({ message: "Wishlist not found" });
 
-export const claimGiftItem = async (req, res) => {
-  try {
-    const { wishlistId, itemId } = req.params;
-    const { claimerName } = req.body;
-
-    const wishlist = await Wishlist.findById(wishlistId);
-    const item = wishlist.items.id(itemId);
-    if (item.claimed) return res.status(400).json({ message: "Item already claimed" });
+    const item = wishlist.items[itemIndex];
+    if (item.claimed) return res.status(400).json({ message: "Already claimed" });
 
     item.claimed = true;
-    item.claimedBy = claimerName;
-    item.claimedAt = new Date();
+    item.claimedBy = claimedBy;
     await wishlist.save();
 
-    res.json(item);
+    res.json({ message: "Claimed!", wishlist });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
