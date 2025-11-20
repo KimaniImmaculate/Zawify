@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",   // ← your backend
+  baseURL: "https://zawify-2.onrender.com/",   // ← your backend
   withCredentials: true,
 });
 
