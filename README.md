@@ -1,4 +1,5 @@
-# Zawify. A Real‑Time Wishlist App
+# Zawify. (A Real‑Time Wishlist App)
+
 
 Zawify is a real‑time gift‑claiming application built with the MERN stack (MongoDB Atlas, Express, React + Vite, Node.js) and Socket.IO. Users create shareable wishlists and friends/family can claim gifts in real time while preventing duplicate claims.
 
@@ -70,7 +71,6 @@ Zawify/
         ├── controllers/       # Route logic (authController, wishlistController, itemController, aiController)
         ├── routes/            # Express routes (auth.js, wishlist.js, item.js, ai.js)
         ├── middleware/        # auth.js (JWT), error handling
-        └── utils/             # helpers (token generation, socket helpers)
 ```
 
 
@@ -144,7 +144,9 @@ Wishlists
 ## Screenshots
 
  ![Landing Page](assets/zawify1.png)
+
  ![Landing Page 2](assets/zawify2.png)
+
  ![Login/Signup Page](assets/zawify3.png)
 
 
