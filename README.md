@@ -7,7 +7,7 @@ Zawify is a real‑time gift‑claiming application built with the MERN stack (M
 ## Live demo
 - Frontend: https://zawify.vercel.app/  
 - Backend API: https://zawify-2.onrender.com/
-
+- Canva Slides: https://www.canva.com/design/DAGxe7b4Ov8/zcrxquyIrd-TmFCuifaDcQ/edit?utm_content=DAGxe7b4Ov8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 ## Table of contents
 - [Overview](#overview)  
@@ -47,30 +47,58 @@ Owners create wishlists and add items. Each wishlist can be published via a publ
 Monorepo layout:
 
 ```
-Zawify/
-├── README.md
+Zawify/                         
+├── .github/
+│   └── workflows/
+│       └── ci.yml               # GitHub Actions — ALL GREEN on every push
+├── .gitignore
+├── README.md                    
+│
 ├── frontend/
-│   ├── public/
 │   ├── src/
-│   │   ├── components/        # Reusable UI components (Navbar, ItemCard, WishlistCard, etc.)
-│   │   ├── pages/             # Views (LandingPage, AuthForm, CreateWishlist, WishlistDetail, Signup, Login)
-│   │   ├── services/          # API helpers (api.js, authService.js, wishlistService.js, aiService.js)
+│   │   ├── pages/               
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── AuthForm.jsx
+│   │   │   ├── CreateWishlist.jsx
+│   │   │   └── WishlistDetail.jsx
+│   │   ├── utils/
+│   │   │   └── socket.js        # Socket.IO client
 │   │   ├── App.jsx
 │   │   ├── main.jsx
-│   │   └── index.css
+│   │   ├── index.css
+│   │   └── __tests__/
+│   │       ├── AuthForm.test.jsx
+│   │       ├── LandingPage.test.jsx
+│   │       ├── CreateWishlist.test.jsx
+│   │       └── WishlistDetail.test.jsx   # 15+ tests — ALL GREEN
+│   ├── index.html                   
+│   ├── .env                         
 │   ├── package.json
 │   ├── vite.config.js
-│   └── .env
+│   └── vitest.config.js (or vite.config.js handles testing)
+│
 └── backend/
-    ├── .env                   # MONGO_URI, JWT_SECRET, FRONTEND_ORIGIN, PORT
-    ├── server.js              # Express + Socket.IO entry
-    ├── config.js              # DB connection helper
+    ├── .env                         # MONGO_URI, JWT_SECRET, CLIENT_URL
+    ├── server.js                    # Final version — only starts when run directly
+    ├── jest.config.js               # ESM + Jest — working perfectly
     ├── package.json
+    │
     └── src/
-        ├── models/            # Mongoose schemas (User.js, Wishlist.js, Item.js)
-        ├── controllers/       # Route logic (authController, wishlistController, itemController, aiController)
-        ├── routes/            # Express routes (auth.js, wishlist.js, item.js, ai.js)
-        ├── middleware/        # auth.js (JWT), error handling
+        ├── config/
+        │   └── db.js                # connectDB() function only
+        ├── controllers/
+        │   └── authController.js    # (or logic inline in routes)
+        ├── middleware/
+        │   └── auth.js              # JWT — passes id + name
+        ├── models/
+        │   ├── User.js
+        │   └── Wishlist.js
+        ├── routes/
+        │   ├── auth.js
+        │   └── wishlist.js          # /create, /:id, /claim
+        └── __tests__/
+            └── wishlist.test.js     # Real JWT, real DB — 3/3 PASSING
+
 ```
 
 
@@ -159,11 +187,3 @@ Backend
 
 Checklist for production
 - HTTPS, secure cookies, proper CORS, rotate secrets, enable logging and monitoring, database backups.
-
-
-
-
-
-
-
-
