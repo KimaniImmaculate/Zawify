@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import io from 'socket.io-client';
+import socket from './utils/socket'; 
 import axios from 'axios';
 
-const socket = io('http://localhost:5000'); 
 
 const WishlistDetail = () => {
     const { wishlistId } = useParams();
@@ -83,9 +82,7 @@ const WishlistDetail = () => {
                 <h2 className="text-4xl font-extrabold text-center mb-4 text-indigo-700">
                     {wishlist.title}
                 </h2>
-                <p className="text-center text-lg text-gray-600 mb-8">
-                    A list created by {wishlist.ownerName || 'a loved one'}.
-                </p>
+               <p className="text-center text-lg text-gray-600 mb-8">A list created by <strong>{wishlist.ownerName || 'a loved one'}</strong>.</p>
 
                 <div className="space-y-6">
                     {wishlist.gifts.map((gift) => (

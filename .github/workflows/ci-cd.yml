@@ -1,0 +1,59 @@
+# .github/workflows/ci.yml
+name: Zawify CI — Queen Immaculate's Empire
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install backend deps
+        run: npm install
+        
+      - name: Run backend tests
+        run: npm test
+        env:
+          JWT_SECRET: fallback_secret_zawify_2025
+          MONGO_URI: mongodb://127.0.0.1:27017/zawify-test
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Install frontend deps
+        run: npm install
+        
+      - name: Run frontend tests
+        run: npm test -- --passWithNoTests
+
+  notify:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - run: echo "QUEEN IMMACULATE HAS SPOKEN — ALL TESTS PASSED. ZAWIFY IS PERFECT."
